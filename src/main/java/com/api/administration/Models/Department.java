@@ -1,13 +1,17 @@
 package com.api.administration.Models;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "departments")
+@Data
+@Table(name = "Departments")
 public class Department {
     @Id
     @GeneratedValue

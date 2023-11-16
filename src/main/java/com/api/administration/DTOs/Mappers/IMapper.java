@@ -12,8 +12,10 @@ public interface IMapper {
     IMapper INSTANCE = Mappers.getMapper(IMapper.class);
 
     @Mapping(source = "department.name", target = "departmentName")
+    @Mapping(source = "manager.name", target = "managerName")
     EmployeeDTO toDto(Employee employee);
 
     @Mapping(source = "departmentName", target = "department.name")
+    @Mapping(source = "managerName", target = "manager.name")
     Employee to(EmployeeDTO employeeDTO);
 }
