@@ -1,11 +1,15 @@
 package com.api.administration.Models;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Entity
-@Table(name = "employees")
+@Data
+@Table(name = "Employees")
 public class Employee{
     @Id
     @GeneratedValue
@@ -13,7 +17,7 @@ public class Employee{
 
     public String name;
 
-    @OneToOne(optional = true)
+    @ManyToOne(optional = true)
     @JoinColumn(name = "manager_id")
     public Employee manager;
 
