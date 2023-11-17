@@ -3,6 +3,7 @@ package com.api.administration.Controller;
 import com.api.administration.DTOs.EmployeeDTO;
 import com.api.administration.Services.Interfaces.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -51,5 +52,11 @@ public class EmployeeController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/getByDepartment")
+    public ResponseEntity<Collection<EmployeeDTO>> getEmployeesByDepartment(@RequestParam String departmentName){
+        var employees = _employeeService.getEmployeesFromDepartment(departmentName);
+        return ResponseEntity.ok(employees);
     }
 }

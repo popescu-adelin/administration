@@ -21,7 +21,9 @@ public class Department {
 
     public String description;
 
-    public int parentId;
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "parent_id")
+    public Department parentDepartment;
 
     @OneToMany(mappedBy = "department")
     public List<Employee> employees;

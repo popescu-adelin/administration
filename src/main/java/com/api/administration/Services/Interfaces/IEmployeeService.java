@@ -12,4 +12,5 @@ public interface IEmployeeService {
     public EmployeeDTO addEmployee(EmployeeDTO employeeDTO);
     public EmployeeDTO updateEmployee(EmployeeDTO employeeDTO);
     public Boolean deleteEmployeeById(String id);
+    public Collection<EmployeeDTO> getEmployeesFromDepartment(String departmentName);
 }

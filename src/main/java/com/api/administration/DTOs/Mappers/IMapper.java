@@ -1,6 +1,8 @@
 package com.api.administration.DTOs.Mappers;
 
+import com.api.administration.DTOs.DepartmentDTO;
 import com.api.administration.DTOs.EmployeeDTO;
+import com.api.administration.Models.Department;
 import com.api.administration.Models.Employee;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -18,4 +20,10 @@ public interface IMapper {
     @Mapping(source = "departmentName", target = "department.name")
     @Mapping(source = "managerName", target = "manager.name")
     Employee to(EmployeeDTO employeeDTO);
+
+    @Mapping(source = "parentDepartment.name", target = "parentDepartmentName")
+    DepartmentDTO toDto(Department department);
+
+    @Mapping(source = "parentDepartmentName", target = "parentDepartment.name")
+    Department to(DepartmentDTO departmentDTO);
 }

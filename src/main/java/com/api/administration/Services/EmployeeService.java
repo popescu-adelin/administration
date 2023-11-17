@@ -132,4 +132,12 @@ public class EmployeeService implements IEmployeeService {
 
         return true;
     }
+
+    @Override
+    public Collection<EmployeeDTO> getEmployeesFromDepartment(String departmentName) {
+        var employees = _employeeRepository.findByDepartmentName(departmentName);
+        return employees.stream()
+                .map(_mapper::toDto)
+                .collect(Collectors.toList());
+    }
 }
