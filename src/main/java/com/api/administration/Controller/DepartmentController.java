@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200" )
 @RequestMapping("/api/department")
 public class DepartmentController {
     private final IDepartmentService _departmentService;
@@ -25,18 +26,18 @@ public class DepartmentController {
     }
 
     @GetMapping()
-    public List<DepartmentDTO> getEmployees(){
+    public List<DepartmentDTO> getDepartment(){
         return _departmentService.getDepartments();
     }
 
     @PostMapping()
-    public DepartmentDTO addEmploye(@RequestBody DepartmentDTO departmentDto){
+    public DepartmentDTO addDepartment(@RequestBody DepartmentDTO departmentDto){
         var department = _departmentService.addDepartment(departmentDto);
         return department;
     }
 
     @PutMapping()
-    public ResponseEntity<Department> updateEmployee(@RequestBody Department departmentDto){
+    public ResponseEntity<DepartmentDTO> updateDepartment(@RequestBody DepartmentDTO departmentDto){
         var department = _departmentService.updateDepartment(departmentDto);
         if(department == null){
             return ResponseEntity.notFound().build();
@@ -45,7 +46,7 @@ public class DepartmentController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable String id){
+    public ResponseEntity<Void> deleteDepartment(@PathVariable String id){
         var isDeleted = _departmentService.deleteDepartment(id);
         if(!isDeleted){
             return ResponseEntity.badRequest().build();
@@ -56,7 +57,10 @@ public class DepartmentController {
 
     @PutMapping("/moveDepartment")
     public ResponseEntity<Void> moveDepartment(@RequestBody MoveDepartmentDto data){
-        _departmentService.moveDepartmentToExistingDepartment(data.departmentName, data.targetDepartmentName);
+        var success = _departmentService.moveDepartmentToExistingDepartment(data.departmentName, data.targetDepartmentName);
+        if(!success){
+            return ResponseEntity.badRequest().build();
+        }
         return  ResponseEntity.ok().build();
     }
 }

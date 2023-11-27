@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.springframework.web.client.HttpClientErrorException.*;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200" )
 @RequestMapping("/api/employee")
 public class EmployeeController {
     private final IEmployeeService _employeeService;
@@ -25,14 +27,27 @@ public class EmployeeController {
     }
 
     @GetMapping()
-    public Collection<EmployeeDTO> getEmployees(){
-        return _employeeService.getEmployees();
+    public ResponseEntity<List<EmployeeDTO>> getEmployees(){
+        var employees = _employeeService.getEmployees();
+        return ResponseEntity.ok(employees);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable String id){
+        var employee = _employeeService.getEmployeeById(id);
+        if(employee == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(employee);
     }
 
     @PostMapping()
-    public EmployeeDTO addEmploye(@RequestBody EmployeeDTO employeeDTO){
+    public ResponseEntity<EmployeeDTO> addEmploye(@RequestBody EmployeeDTO employeeDTO){
         var employee = _employeeService.addEmployee(employeeDTO);
-        return employee;
+        if(employee==null){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(employee);
     }
 
     @PutMapping()

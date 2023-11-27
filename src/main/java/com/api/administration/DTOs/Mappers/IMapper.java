@@ -1,6 +1,7 @@
 package com.api.administration.DTOs.Mappers;
 
 import com.api.administration.DTOs.DepartmentDTO;
+import com.api.administration.DTOs.EmployeeBriefData;
 import com.api.administration.DTOs.EmployeeDTO;
 import com.api.administration.Models.Department;
 import com.api.administration.Models.Employee;
@@ -20,6 +21,9 @@ public interface IMapper {
     @Mapping(source = "departmentName", target = "department.name")
     @Mapping(source = "managerName", target = "manager.name")
     Employee to(EmployeeDTO employeeDTO);
+
+    @Mapping(source = "manager.name", target = "managerName")
+    EmployeeBriefData toBriefData(Employee employee);
 
     @Mapping(source = "parentDepartment.name", target = "parentDepartmentName")
     DepartmentDTO toDto(Department department);
