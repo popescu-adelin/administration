@@ -1,17 +1,16 @@
 package com.api.administration.DTOs.Mappers;
 
 import com.api.administration.DTOs.DepartmentDTO;
+import com.api.administration.DTOs.EmployeeBriefData;
 import com.api.administration.DTOs.EmployeeDTO;
 import com.api.administration.Models.Department;
 import com.api.administration.Models.Employee;
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-11-16T23:27:17+0200",
+    date = "2023-11-25T20:29:43+0200",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.1 (Oracle Corporation)"
 )
 @Component
@@ -27,6 +26,7 @@ public class IMapperImpl implements IMapper {
 
         employeeDTO.departmentName = employeeDepartmentName( employee );
         employeeDTO.managerName = employeeManagerName( employee );
+        employeeDTO.id = employee.id;
         employeeDTO.name = employee.name;
         employeeDTO.email = employee.email;
 
@@ -43,10 +43,27 @@ public class IMapperImpl implements IMapper {
 
         employee.department = employeeDTOToDepartment( employeeDTO );
         employee.manager = employeeDTOToEmployee( employeeDTO );
+        employee.id = employeeDTO.id;
         employee.name = employeeDTO.name;
         employee.email = employeeDTO.email;
 
         return employee;
+    }
+
+    @Override
+    public EmployeeBriefData toBriefData(Employee employee) {
+        if ( employee == null ) {
+            return null;
+        }
+
+        EmployeeBriefData employeeBriefData = new EmployeeBriefData();
+
+        employeeBriefData.managerName = employeeManagerName( employee );
+        employeeBriefData.id = employee.id;
+        employeeBriefData.name = employee.name;
+        employeeBriefData.email = employee.email;
+
+        return employeeBriefData;
     }
 
     @Override
@@ -61,10 +78,6 @@ public class IMapperImpl implements IMapper {
         departmentDTO.id = department.id;
         departmentDTO.name = department.name;
         departmentDTO.description = department.description;
-        List<Employee> list = department.employees;
-        if ( list != null ) {
-            departmentDTO.employees = new ArrayList<Employee>( list );
-        }
 
         return departmentDTO;
     }
@@ -81,10 +94,6 @@ public class IMapperImpl implements IMapper {
         department.id = departmentDTO.id;
         department.name = departmentDTO.name;
         department.description = departmentDTO.description;
-        List<Employee> list = departmentDTO.employees;
-        if ( list != null ) {
-            department.employees = new ArrayList<Employee>( list );
-        }
 
         return department;
     }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -33,11 +34,24 @@ public class EmployeeService implements IEmployeeService {
         _mapper=mapper;
     }
 
-    public Collection<EmployeeDTO> getEmployees(){
+    @Transactional
+    public List<EmployeeDTO> getEmployees(){
         var employees = _employeeRepository.findAll();
         return employees.stream()
                 .map(_mapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public EmployeeDTO getEmployeeById(String id){
+        var userId = UUID.fromString(id);
+        var employee = _employeeRepository.findById(userId).orElse(null);
+
+        if(employee == null){
+            return null;
+        }
+
+        return _mapper.toDto(employee);
     }
 
     @Transactional
@@ -49,25 +63,22 @@ public class EmployeeService implements IEmployeeService {
         if(employeeDTO.departmentName != null && !employeeDTO.departmentName.isEmpty()){
             Department department = _departmentRepository
                     .findByName(employeeDTO.departmentName)
-                    .orElseGet(() -> {
-                        Department newDepartment= new Department();
-                        newDepartment.name = employeeDTO.departmentName;
-                        newDepartment.description ="No description";
-                        return _departmentRepository.save(newDepartment);
-                    });
+                    .orElseGet(null);
+
+            if(department == null){
+                return null;
+            }
 
             employee.department=department;
         }
 
         if(employeeDTO.managerName != null && !employeeDTO.managerName.isEmpty()){
-            Optional<Employee> managerOpt = _employeeRepository
-                    .findByName(employeeDTO.managerName);
 
-            Employee manager = managerOpt.orElse(null);
-            employee.manager=manager;
+            employee.manager= _employeeRepository
+                    .findByName(employeeDTO.managerName)
+                    .orElse(null);
         }
 
-        //var employee = _mapper.to(employeeDTO);
         var addedEmployee =  _employeeRepository.save(employee);
 
         return _mapper.toDto(addedEmployee);
@@ -76,41 +87,42 @@ public class EmployeeService implements IEmployeeService {
     @Transactional
     public EmployeeDTO updateEmployee(EmployeeDTO employeeDTO){
         var employee = _employeeRepository.
-                findByName(employeeDTO.name).
+                findById(employeeDTO.id).
                 orElseGet(null);
+
         if(employee ==  null){
             return null;
         }
-
+        employee.name=employeeDTO.name;
         employee.email=employeeDTO.email;
 
         if(employeeDTO.departmentName != null && !employeeDTO.departmentName.isEmpty()){
             Department department = _departmentRepository
                     .findByName(employeeDTO.departmentName)
-                    .orElseGet(() -> {
-                        Department newDepartment= new Department();
-                        newDepartment.name = employeeDTO.departmentName;
-                        newDepartment.description ="No description";
-                        return _departmentRepository.save(newDepartment);
-                    });
+                    .orElseGet(null);
+
+            if(department==null){
+                return null;
+            }
 
             employee.department=department;
         }
 
         if(employeeDTO.managerName != null && !employeeDTO.managerName.isEmpty()){
-            Optional<Employee> managerOpt = _employeeRepository
-                    .findByName(employeeDTO.managerName);
 
-            Employee manager = managerOpt.orElse(null);
-            employee.manager=manager;
+            employee.manager= _employeeRepository
+                    .findByName(employeeDTO.managerName)
+                    .orElse(null);
+
+            if(employee.manager == null){
+                return null;
+            }
         }
 
         //var employee = _mapper.to(employeeDTO);
         var addedEmployee =  _employeeRepository.save(employee);
 
-        var updatedEmployee =  _mapper.toDto(addedEmployee);
-
-        return updatedEmployee;
+        return _mapper.toDto(addedEmployee);
     }
 
     @Transactional
@@ -121,6 +133,14 @@ public class EmployeeService implements IEmployeeService {
         if(employee == null){
             return false;
         }
+
+        var managedEmployees = _employeeRepository.findByManagerId(employee.id);
+
+        for(var managedEmployee : managedEmployees){
+            managedEmployee.manager=null;
+        }
+
+        _employeeRepository.saveAll(managedEmployees);
 
         try{
             _employeeRepository.delete(employee);
